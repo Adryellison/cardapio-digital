@@ -1,115 +1,224 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardápio Digital</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1, h2 { text-align: center; }
-        .categoria { margin-bottom: 20px; }
-        .item { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
-        .carrinho { border-top: 2px solid #000; padding-top: 10px; margin-top: 20px; }
-        .total { font-weight: bold; }
-        .botao { display: block; width: 100%; padding: 10px; background: #28a745; color: white; border: none; cursor: pointer; }
-        .botao:hover { background: #218838; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Cardápio Digital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .section {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .hidden {
+      display: none;
+    }
+    label {
+      margin-left: 5px;
+    }
+    input[type="number"] {
+      width: 50px;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Cardápio Digital 🍔🥤</h1>
+  <h1>Cardápio Digital</h1>
 
-    <div class="categoria">
-        <h2>🍔 Hambúrgueres</h2>
-        <div class="item">
-            <span>X-Burguer - R$ 10,00</span>
-            <input type="number" min="0" value="0" data-preco="10">
-        </div>
-        <div class="item">
-            <span>X-Salada - R$ 12,00</span>
-            <input type="number" min="0" value="0" data-preco="12">
-        </div>
+  <!-- Seção de seleção de itens -->
+  <div id="menu" class="section">
+    <h2>Escolha os Itens</h2>
+    
+    <!-- Hambúrgueres -->
+    <h3>Hambúrgueres</h3>
+    <div>
+      <input type="checkbox" id="item1" data-name="Hamburguer Simples" data-price="10">
+      <label for="item1">Hamburguer Simples - R$10,00</label>
+      Quantidade: <input type="number" id="qtd_item1" value="1" min="1">
     </div>
-
-    <div class="categoria">
-        <h2>🥐 Salgados</h2>
-        <div class="item">
-            <span>Coxinha - R$ 8,00</span>
-            <input type="number" min="0" value="0" data-preco="8">
-        </div>
-        <div class="item">
-            <span>Pastel - R$ 7,00</span>
-            <input type="number" min="0" value="0" data-preco="7">
-        </div>
+    <div>
+      <input type="checkbox" id="item2" data-name="Hamburguer Duplo" data-price="15">
+      <label for="item2">Hamburguer Duplo - R$15,00</label>
+      Quantidade: <input type="number" id="qtd_item2" value="1" min="1">
     </div>
-
-    <div class="categoria">
-        <h2>🥤 Bebidas</h2>
-        <div class="item">
-            <span>Refrigerante - R$ 5,00</span>
-            <input type="number" min="0" value="0" data-preco="5">
-        </div>
-        <div class="item">
-            <span>Água - R$ 3,00</span>
-            <input type="number" min="0" value="0" data-preco="3">
-        </div>
+    
+    <!-- Salgados -->
+    <h3>Salgados</h3>
+    <div>
+      <input type="checkbox" id="item3" data-name="Batata Frita" data-price="8">
+      <label for="item3">Batata Frita - R$8,00</label>
+      Quantidade: <input type="number" id="qtd_item3" value="1" min="1">
     </div>
-
-    <div class="carrinho">
-        <h2>🛒 Carrinho de Compras</h2>
-        <p class="total">Total: R$ 0,00</p>
-        <button class="botao" onclick="finalizarPedido()">Finalizar Pedido</button>
+    
+    <!-- Bebidas -->
+    <h3>Bebidas</h3>
+    <div>
+      <input type="checkbox" id="item4" data-name="Refrigerante" data-price="5">
+      <label for="item4">Refrigerante - R$5,00</label>
+      Quantidade: <input type="number" id="qtd_item4" value="1" min="1">
     </div>
+    
+    <br>
+    <button onclick="adicionarCarrinho()">Adicionar ao Carrinho</button>
+  </div>
 
-    <script>
-        const inputs = document.querySelectorAll("input[type='number']");
-        const totalElement = document.querySelector(".total");
+  <!-- Seção do carrinho -->
+  <div id="carrinho" class="section hidden">
+    <h2>Carrinho de Compras</h2>
+    <ul id="listaCarrinho">
+      <!-- Os itens selecionados serão listados aqui -->
+    </ul>
+    <p id="totalPedido"></p>
+    <button onclick="voltarMenu()">Voltar ao Cardápio</button>
+    <button onclick="finalizarPedido()">Finalizar Pedido</button>
+  </div>
 
-        function atualizarTotal() {
-            let total = 0;
-            inputs.forEach(input => {
-                let quantidade = parseInt(input.value);
-                let preco = parseFloat(input.getAttribute("data-preco"));
-                total += quantidade * preco;
-            });
-            totalElement.textContent = `Total: R$ ${total.toFixed(2)}`;
+  <!-- Seção de finalização -->
+  <div id="finalizacao" class="section hidden">
+    <h2>Finalização do Pedido</h2>
+    
+    <p>Opções de Pagamento:</p>
+    <input type="radio" name="pagamento" id="pag_cartao" value="Cartão" checked>
+    <label for="pag_cartao">Cartão</label>
+    <input type="radio" name="pagamento" id="pag_pix" value="Pix">
+    <label for="pag_pix">Pix</label>
+    
+    <p>Nome Completo: <input type="text" id="nome"></p>
+    <p>Endereço: <input type="text" id="endereco"></p>
+    
+    <h3>Resumo do Pedido</h3>
+    <div id="resumo"></div>
+    
+    <button onclick="confirmarPedido()">Confirmar Pedido</button>
+    <button onclick="cancelarPedido()">Cancelar Pedido</button>
+  </div>
+
+  <script>
+    // Array que guardará os itens escolhidos
+    var carrinho = [];
+
+    // Função para coletar os itens selecionados e adicionar ao carrinho
+    function adicionarCarrinho() {
+      // Limpa o carrinho para nova seleção
+      carrinho = [];
+      
+      // Array com os IDs dos itens e seus respectivos inputs de quantidade
+      var itens = [
+        { id: "item1", qtd: "qtd_item1" },
+        { id: "item2", qtd: "qtd_item2" },
+        { id: "item3", qtd: "qtd_item3" },
+        { id: "item4", qtd: "qtd_item4" }
+      ];
+      
+      // Verifica cada item se está selecionado
+      for (var i = 0; i < itens.length; i++) {
+        var checkbox = document.getElementById(itens[i].id);
+        if (checkbox.checked) {
+          var nome = checkbox.getAttribute("data-name");
+          var preco = parseFloat(checkbox.getAttribute("data-price"));
+          var quantidade = parseInt(document.getElementById(itens[i].qtd).value);
+          carrinho.push({ nome: nome, preco: preco, quantidade: quantidade });
         }
+      }
+      
+      if (carrinho.length === 0) {
+        alert("Por favor, selecione pelo menos um item.");
+        return;
+      }
+      
+      mostrarCarrinho();
+      document.getElementById("menu").classList.add("hidden");
+      document.getElementById("carrinho").classList.remove("hidden");
+    }
 
-        inputs.forEach(input => input.addEventListener("input", atualizarTotal));
+    // Função que exibe os itens selecionados e calcula o total
+    function mostrarCarrinho() {
+      var lista = document.getElementById("listaCarrinho");
+      lista.innerHTML = "";
+      var total = 0;
+      
+      for (var i = 0; i < carrinho.length; i++) {
+        var item = carrinho[i];
+        var subtotal = item.preco * item.quantidade;
+        total += subtotal;
+        var li = document.createElement("li");
+        li.innerText = item.nome + " - " + item.quantidade + " x R$" + item.preco.toFixed(2) + " = R$" + subtotal.toFixed(2);
+        lista.appendChild(li);
+      }
+      
+      document.getElementById("totalPedido").innerText = "Total: R$" + total.toFixed(2);
+    }
 
-        function finalizarPedido() {
-            let pedido = [];
-            let total = 0;
+    // Volta para o cardápio para que o usuário possa adicionar mais itens
+    function voltarMenu() {
+      document.getElementById("menu").classList.remove("hidden");
+      document.getElementById("carrinho").classList.add("hidden");
+    }
 
-            inputs.forEach(input => {
-                let quantidade = parseInt(input.value);
-                let nome = input.parentElement.querySelector("span").textContent;
-                let preco = parseFloat(input.getAttribute("data-preco"));
-                if (quantidade > 0) {
-                    pedido.push(`${quantidade}x ${nome}`);
-                    total += quantidade * preco;
-                }
-            });
+    // Prepara a finalização do pedido e exibe um resumo
+    function finalizarPedido() {
+      var resumoDiv = document.getElementById("resumo");
+      resumoDiv.innerHTML = "";
+      var total = 0;
+      
+      for (var i = 0; i < carrinho.length; i++) {
+        var item = carrinho[i];
+        var subtotal = item.preco * item.quantidade;
+        total += subtotal;
+        resumoDiv.innerHTML += item.nome + " - " + item.quantidade + " x R$" + item.preco.toFixed(2) + " = R$" + subtotal.toFixed(2) + "<br>";
+      }
+      
+      resumoDiv.innerHTML += "<br><strong>Total do pedido: R$" + total.toFixed(2) + "</strong>";
+      
+      document.getElementById("carrinho").classList.add("hidden");
+      document.getElementById("finalizacao").classList.remove("hidden");
+    }
 
-            if (pedido.length === 0) {
-                alert("Por favor, selecione pelo menos um item para finalizar o pedido.");
-                return;
-            }
+    // Confirma o pedido após validar os dados de entrega
+    function confirmarPedido() {
+      var nome = document.getElementById("nome").value;
+      var endereco = document.getElementById("endereco").value;
+      var pagamento = document.querySelector('input[name="pagamento"]:checked').value;
+      
+      if (nome === "" || endereco === "") {
+        alert("Preencha seu nome e endereço para entrega.");
+        return;
+      }
+      
+      alert("Pedido Confirmado!\nNome: " + nome + "\nEndereço: " + endereco + "\nPagamento: " + pagamento);
+      resetarTudo();
+    }
 
-            let nomeCliente = prompt("Digite seu nome:");
-            let endereco = prompt("Digite seu endereço:");
-            let pagamento = prompt("Escolha a forma de pagamento: Cartão ou Pix?");
+    // Permite cancelar o pedido
+    function cancelarPedido() {
+      if (confirm("Deseja cancelar o pedido?")) {
+        resetarTudo();
+      }
+    }
 
-            if (!nomeCliente || !endereco || !pagamento) {
-                alert("Todos os campos devem ser preenchidos!");
-                return;
-            }
-
-            let resumo = `📌 Resumo do Pedido:\n\n${pedido.join("\n")}\n\n💰 Total: R$ ${total.toFixed(2)}\n🏠 Endereço: ${endereco}\n💳 Pagamento: ${pagamento}\n\n✅ Pedido confirmado! Obrigado, ${nomeCliente}!`;
-
-            alert(resumo);
-        }
-    </script>
+    // Função para limpar os dados e reiniciar o sistema
+    function resetarTudo() {
+      carrinho = [];
+      document.getElementById("menu").classList.remove("hidden");
+      document.getElementById("carrinho").classList.add("hidden");
+      document.getElementById("finalizacao").classList.add("hidden");
+      
+      // Limpa seleção dos checkboxes e reseta as quantidades
+      var ids = ["item1", "item2", "item3", "item4"];
+      var qtds = ["qtd_item1", "qtd_item2", "qtd_item3", "qtd_item4"];
+      
+      for (var i = 0; i < ids.length; i++) {
+        document.getElementById(ids[i]).checked = false;
+        document.getElementById(qtds[i]).value = 1;
+      }
+      
+      document.getElementById("nome").value = "";
+      document.getElementById("endereco").value = "";
+    }
+  </script>
 
 </body>
 </html>
